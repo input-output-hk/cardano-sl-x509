@@ -65,4 +65,3 @@ test-suite cardano-sl-x509-test
                     , cardano-sl-x509
                     , universum
                     , hedgehog
-                    , cardano-sl-util-test

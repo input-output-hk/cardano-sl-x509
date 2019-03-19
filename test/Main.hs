@@ -10,6 +10,7 @@ import           Test.QuickCheck (Property, Result (..), conjoin,
                      counterexample, ioProperty, label, property,
                      quickCheckResult, withMaxSuccess, (===))
 
+import           System.IO (hSetEncoding, stderr, stdout, utf8)
 import           Cardano.X509.Configuration (CertDescription (..),
                      DirConfiguration (..), ErrInvalidExpiryDays,
                      ServerConfiguration (..), TLSConfiguration (..),
@@ -20,7 +21,7 @@ import           Data.X509.Extra (FailedReason, ServiceID, SignedCertificate,
 import           Test.Cardano.X509.Configuration (tests)
 import           Test.Cardano.X509.Configuration.Arbitrary (AltNames (..),
                      Invalid (..), Unknown (..))
-import           Test.Pos.Util.Tripping (runTests)
+--import           Test.Pos.Util.Tripping (runTests)
 
 --
 -- Main
@@ -43,6 +44,17 @@ main = do
         sequence >=> (mapM_ $ \case
             Success {} -> return ()
             _          -> exitFailure)
+
+    -- | Copied from cardano-sl
+    runTests :: [IO Bool] -> IO ()
+    runTests tests' = do
+        -- ensure UTF-8. As that's what hedgehog needs.
+        hSetEncoding stdout utf8
+        hSetEncoding stderr utf8
+
+        result <- and <$> sequence tests'
+        unless result
+            exitFailure
 
 
 --

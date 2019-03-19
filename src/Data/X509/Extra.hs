@@ -31,7 +31,7 @@ module Data.X509.Extra
     , module Data.X509.Validation
     ) where
 
-import           Universum
+import           Universum hiding (hClose)
 
 import           Crypto.Hash.Algorithms (SHA256 (..))
 import           Crypto.PubKey.RSA (PrivateKey (..), PublicKey (..), generate)
