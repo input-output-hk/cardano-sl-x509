@@ -35,8 +35,8 @@ library
                , filepath
                , hourglass
                -- The IPv6 constructor has changed in 1.5 but Stackage
-               -- lts 13.14 specifies ip 1.4.2.1.
-               , ip < 1.5
+               -- lts 13.14 through 13.26 specifies ip 1.4.2.1.
+               , ip == 1.4.*
                , universum
                , unordered-containers
                , x509
