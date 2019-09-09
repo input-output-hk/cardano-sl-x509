@@ -8,7 +8,8 @@ module Test.Cardano.X509.Configuration.Arbitrary
     , AltNames(..)
     ) where
 
-import           Universum
+import           Cardano.Prelude
+import           Prelude (String)
 
 import qualified Data.Char as Char
 import qualified Data.List as List

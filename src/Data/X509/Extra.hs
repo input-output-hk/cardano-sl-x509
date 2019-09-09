@@ -31,8 +31,10 @@ module Data.X509.Extra
     , module Data.X509.Validation
     ) where
 
-import           Universum hiding (hClose)
+import           Cardano.Prelude
+import           Prelude (String)
 
+import           Control.Monad.Fail (MonadFail (..))
 import           Crypto.Hash.Algorithms (SHA256 (..))
 import           Crypto.PubKey.RSA (PrivateKey (..), PublicKey (..), generate)
 import           Crypto.PubKey.RSA.PKCS15 (signSafer)
@@ -44,6 +46,7 @@ import           Data.ASN1.Types (ASN1 (..), ASN1ConstructionType (..),
 import           Data.ByteString (ByteString)
 import           Data.Default.Class
 import           Data.List (intercalate)
+import qualified Data.Text as Text
 import           Data.X509
 import           Data.X509.CertificateStore (CertificateStore,
                      makeCertificateStore)
@@ -51,7 +54,7 @@ import           Data.X509.Validation
 import           Net.IPv4 (IPv4 (..))
 import           Net.IPv6 (IPv6 (..))
 import           System.Directory (removeFile, renameFile)
-import           System.FilePath (splitFileName, (<.>))
+import           System.FilePath (addExtension, splitFileName)
 import           System.IO (hClose, openBinaryTempFile)
 
 import qualified Crypto.PubKey.RSA.Types as RSA
@@ -192,7 +195,7 @@ failIfReasons = \case
 -- | Parse a Subject Alternative Name (SAN) from a raw string
 parseSAN :: String -> AltName
 parseSAN name =
-    case IP.decode (toText name) of
+    case IP.decode (Text.pack name) of
         Just ip ->
             AltNameIP $ IP.case_ ipv4ToBS ipv6ToBS ip
 
@@ -350,7 +353,7 @@ writeFileAtomicPrivate :: FilePath -> ByteString -> IO ()
 writeFileAtomicPrivate targetPath content = do
   let (targetDir, targetFile) = splitFileName targetPath
   bracketOnError
-    (openBinaryTempFile targetDir $ targetFile <.> "tmp")
+    (openBinaryTempFile targetDir $ addExtension targetFile "tmp")
     (\(tmpPath, handle) -> hClose handle >> removeFile tmpPath)
     (\(tmpPath, handle) -> do
         BS.hPut handle content

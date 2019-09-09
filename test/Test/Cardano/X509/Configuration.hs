@@ -8,7 +8,8 @@ import           Hedgehog.Internal.TH (TExpQ)
 import qualified Hedgehog as H
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import           Universum hiding (head, tail)
+import           Cardano.Prelude hiding (head, tail)
+import           Prelude (String)
 
 -- TODO(KS): Yes, this is too complicated to import since it requires a lot.
 --roundTripTLSConfiguration :: Property
