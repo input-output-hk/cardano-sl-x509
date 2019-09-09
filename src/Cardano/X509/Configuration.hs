@@ -44,7 +44,7 @@ import           Data.X509 (DistinguishedName (..), DnElement (..),
                      ExtensionRaw, Extensions (..), PubKey (..),
                      SignedCertificate, extensionEncode, hashDN)
 import           Data.X509.Validation (ValidationChecks (..), defaultChecks)
-import           Data.Yaml (decodeFileEither, parseMonad, withObject)
+import           Data.Yaml (decodeFileEither, parseEither, withObject)
 import           GHC.Generics (Generic)
 import           System.IO (FilePath)
 import           Time.System (dateCurrent)
@@ -248,14 +248,18 @@ decodeConfigFile
     -> FilePath         -- ^ Target configuration file
     -> m TLSConfiguration
 decodeConfigFile (ConfigurationKey cKey) filepath =
-    decodeFileMonad filepath >>= parseMonad parser
+    either throwInv pure . parseEither parser =<< decodeFileMonad filepath
   where
     errMsg key = "property '"<> key <> "' " <> "not found in configuration file."
 
-    decodeFileMonad = (liftIO . decodeFileEither) >=> either
-        (throwM . ErrInvalidTLSConfiguration . show)
-        return
+    decodeFileMonad :: (MonadIO m, MonadThrow m) => FilePath -> m Value
+    decodeFileMonad =
+        (liftIO . decodeFileEither) >=> either (throwInv . show) pure
 
+    throwInv :: MonadThrow m => String -> m a
+    throwInv = throwM . ErrInvalidTLSConfiguration
+
+    parser :: Value -> Aeson.Parser TLSConfiguration
     parser = withObject "TLS Configuration" (parseK cKey >=> parseK "tls")
 
     parseK :: FromJSON a => String -> Aeson.Object -> Aeson.Parser a
