@@ -27,15 +27,19 @@ module Cardano.X509.Configuration
     , genCertificate
     ) where
 
-import           Universum
+import           Cardano.Prelude
+import           Prelude (String)
 
 import           Control.Monad ((>=>))
+import           Control.Monad.Catch (MonadThrow (..))
+import           Control.Monad.Fail (MonadFail (..))
 import           Crypto.PubKey.RSA (PrivateKey, PublicKey)
 import           Data.ASN1.OID (OIDable (..))
 import           Data.Hourglass (Minutes (..), Period (..), dateAddPeriod,
                      timeAdd)
 import           Data.Semigroup ((<>))
 import           Data.String (fromString)
+import qualified Data.Text as Text
 import           Data.X509 (DistinguishedName (..), DnElement (..),
                      ExtAuthorityKeyId (..), ExtBasicConstraints (..),
                      ExtExtendedKeyUsage (..), ExtKeyUsage (..),
@@ -263,7 +267,7 @@ decodeConfigFile (ConfigurationKey cKey) filepath =
     parser = withObject "TLS Configuration" (parseK cKey >=> parseK "tls")
 
     parseK :: FromJSON a => String -> Aeson.Object -> Aeson.Parser a
-    parseK key = maybe (fail $ errMsg key) parseJSON . HM.lookup (toText key)
+    parseK key = maybe (fail $ errMsg key) parseJSON . HM.lookup (Text.pack key)
 
 
 -- | Generate & sign a certificate from a certificate description

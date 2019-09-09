@@ -29,15 +29,17 @@ library
                , asn1-types
                , base64-bytestring
                , bytestring
+               , cardano-prelude
                , cryptonite
                , data-default-class
                , directory
+               , exceptions
                , filepath
                , hourglass
                -- The IPv6 constructor has changed in 1.5 but Stackage
                -- lts 13.14 through 13.26 specifies ip 1.4.2.1.
                , ip == 1.4.*
-               , universum
+               , text
                , unordered-containers
                , x509
                , x509-store
@@ -64,6 +66,7 @@ test-suite cardano-sl-x509-test
 
   build-depends:      base
                     , QuickCheck
+                    , cardano-prelude
                     , cardano-sl-x509
-                    , universum
+                    , exceptions
                     , hedgehog

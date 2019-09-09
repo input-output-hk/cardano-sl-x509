@@ -1,5 +1,12 @@
-resolver: lts-13.26
-compiler: ghc-8.6.5
+resolver: https://raw.githubusercontent.com/input-output-hk/cardano-prelude/b83730dccab14111d62144b048084eec7900d091/snapshot.yaml
+
 
 packages:
   - .
+
+extra-deps:
+  - git: https://github.com/input-output-hk/cardano-prelude
+    commit: b83730dccab14111d62144b048084eec7900d091
+    subdirs:
+      - .
+      - test

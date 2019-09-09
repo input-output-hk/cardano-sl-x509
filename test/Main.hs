@@ -3,8 +3,9 @@
 
 module Main where
 
-import           Universum
+import           Cardano.Prelude
 
+import           Control.Monad.Catch (MonadThrow (..))
 import qualified Data.List.NonEmpty as NonEmpty
 import           Test.QuickCheck (Property, Result (..), conjoin,
                      counterexample, ioProperty, label, property,
