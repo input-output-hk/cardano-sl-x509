@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase        #-}
 
@@ -47,6 +48,9 @@ import           Data.ByteString (ByteString)
 import           Data.Default.Class
 import           Data.List (intercalate)
 import qualified Data.Text as Text
+#if MIN_VERSION_ip(1,5,0)
+import           Data.WideWord.Word128 ( Word128(..) )
+#endif
 import           Data.X509
 import           Data.X509.CertificateStore (CertificateStore,
                      makeCertificateStore)
@@ -223,8 +227,13 @@ parseSAN name =
         BL.toStrict $ BS.toLazyByteString (BS.word32BE bytes)
 
     ipv6ToBS :: IPv6 -> ByteString
+#if MIN_VERSION_ip(1,5,0)
+    ipv6ToBS (IPv6 (Word128 a b)) =
+#else
     ipv6ToBS (IPv6 a b) =
-        BL.toStrict $ BS.toLazyByteString (BS.word64BE a <> BS.word64BE b)
+#endif
+        BL.toStrict $ BS.toLazyByteString
+          (BS.word64BE a <> BS.word64BE b)
 
 
 --
