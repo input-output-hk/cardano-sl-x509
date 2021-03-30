@@ -1,0 +1,627 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -fno-warn-orphans #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE FlexibleContexts  #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Test.Cardano.X509.Configuration.Arbitrary</span><span>
+</span><span id="line-6"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier">Invalid</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Unknown"><span class="hs-identifier">Unknown</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier">AltNames</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Cardano.Prelude</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">String</span></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Char</span></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">List</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.NonEmpty</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">NonEmpty</span></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Test.QuickCheck</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Gen</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">choose</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">elements</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">listOf</span></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>                     </span><span class="annot"><span class="hs-identifier">listOf1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">oneof</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">scale</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">suchThat</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Test.QuickCheck.Modifiers</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Positive</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier">Cardano.X509.Configuration</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier">CertConfiguration</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-22"></span><span>                     </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier">DirConfiguration</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier">ServerConfiguration</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>                     </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier">TLSConfiguration</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-comment">--</span><span>
+</span><span id="line-27"></span><span class="hs-comment">-- Types</span><span>
+</span><span id="line-28"></span><span class="hs-comment">--</span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- | Helper to declare Arbitrary instances with generators that</span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- generate invalid values</span><span>
+</span><span id="line-32"></span><span class="hs-keyword">newtype</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679093907"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="Invalid"><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span></span><span> </span><span id="local-6989586621679093907"><span class="annot"><a href="#local-6989586621679093907"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Invalid"><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getInvalid"><span class="annot"><span class="annottext">Invalid a -&gt; a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#getInvalid"><span class="hs-identifier hs-var hs-var">getInvalid</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679093907"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679093856"><span id="local-6989586621679093858"><span id="local-6989586621679093860"><span class="annot"><span class="annottext">Int -&gt; Invalid a -&gt; ShowS
+[Invalid a] -&gt; ShowS
+Invalid a -&gt; String
+(Int -&gt; Invalid a -&gt; ShowS)
+-&gt; (Invalid a -&gt; String)
+-&gt; ([Invalid a] -&gt; ShowS)
+-&gt; Show (Invalid a)
+forall a. Show a =&gt; Int -&gt; Invalid a -&gt; ShowS
+forall a. Show a =&gt; [Invalid a] -&gt; ShowS
+forall a. Show a =&gt; Invalid a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Invalid a] -&gt; ShowS
+$cshowList :: forall a. Show a =&gt; [Invalid a] -&gt; ShowS
+show :: Invalid a -&gt; String
+$cshow :: forall a. Show a =&gt; Invalid a -&gt; String
+showsPrec :: Int -&gt; Invalid a -&gt; ShowS
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Invalid a -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="hs-comment">-- | Helper to declare Arbitrary instances with generators that</span><span>
+</span><span id="line-36"></span><span class="hs-comment">-- generate unkown valus</span><span>
+</span><span id="line-37"></span><span class="hs-keyword">newtype</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679093883"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="Unknown"><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Unknown"><span class="hs-identifier hs-var">Unknown</span></a></span></span><span> </span><span id="local-6989586621679093883"><span class="annot"><a href="#local-6989586621679093883"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Unknown"><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Unknown"><span class="hs-identifier hs-var">Unknown</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getUnknown"><span class="annot"><span class="annottext">Unknown a -&gt; a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#getUnknown"><span class="hs-identifier hs-var hs-var">getUnknown</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679093883"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679093847"><span id="local-6989586621679093849"><span id="local-6989586621679093851"><span class="annot"><span class="annottext">Int -&gt; Unknown a -&gt; ShowS
+[Unknown a] -&gt; ShowS
+Unknown a -&gt; String
+(Int -&gt; Unknown a -&gt; ShowS)
+-&gt; (Unknown a -&gt; String)
+-&gt; ([Unknown a] -&gt; ShowS)
+-&gt; Show (Unknown a)
+forall a. Show a =&gt; Int -&gt; Unknown a -&gt; ShowS
+forall a. Show a =&gt; [Unknown a] -&gt; ShowS
+forall a. Show a =&gt; Unknown a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Unknown a] -&gt; ShowS
+$cshowList :: forall a. Show a =&gt; [Unknown a] -&gt; ShowS
+show :: Unknown a -&gt; String
+$cshow :: forall a. Show a =&gt; Unknown a -&gt; String
+showsPrec :: Int -&gt; Unknown a -&gt; ShowS
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Unknown a -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- | Easily generate alternative names</span><span>
+</span><span id="line-41"></span><span class="hs-keyword">newtype</span><span> </span><span id="AltNames"><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier hs-var">AltNames</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="AltNames"><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier hs-var">AltNames</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getAltNames"><span class="annot"><span class="annottext">AltNames -&gt; NonEmpty String
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#getAltNames"><span class="hs-identifier hs-var hs-var">getAltNames</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679093839"><span id="local-6989586621679093841"><span id="local-6989586621679093843"><span class="annot"><span class="annottext">Int -&gt; AltNames -&gt; ShowS
+[AltNames] -&gt; ShowS
+AltNames -&gt; String
+(Int -&gt; AltNames -&gt; ShowS)
+-&gt; (AltNames -&gt; String) -&gt; ([AltNames] -&gt; ShowS) -&gt; Show AltNames
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [AltNames] -&gt; ShowS
+$cshowList :: [AltNames] -&gt; ShowS
+show :: AltNames -&gt; String
+$cshow :: AltNames -&gt; String
+showsPrec :: Int -&gt; AltNames -&gt; ShowS
+$cshowsPrec :: Int -&gt; AltNames -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="hs-comment">--</span><span>
+</span><span id="line-45"></span><span class="hs-comment">-- Instances</span><span>
+</span><span id="line-46"></span><span class="hs-comment">--</span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">TLSConfiguration</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-49"></span><span>    </span><span id="local-6989586621679093835"><span class="annot"><span class="annottext">arbitrary :: Gen TLSConfiguration
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CertConfiguration
+-&gt; ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">TLSConfiguration</span></a></span><span>
+</span><span id="line-50"></span><span>        </span><span class="annot"><span class="annottext">(CertConfiguration
+ -&gt; ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration)
+-&gt; Gen CertConfiguration
+-&gt; Gen
+     (ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen CertConfiguration
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-51"></span><span>        </span><span class="annot"><span class="annottext">Gen
+  (ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration)
+-&gt; Gen ServerConfiguration
+-&gt; Gen ([CertConfiguration] -&gt; TLSConfiguration)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen ServerConfiguration
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-52"></span><span>        </span><span class="annot"><span class="annottext">Gen ([CertConfiguration] -&gt; TLSConfiguration)
+-&gt; Gen [CertConfiguration] -&gt; Gen TLSConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int) -&gt; Gen [CertConfiguration] -&gt; Gen [CertConfiguration]
+forall a. (Int -&gt; Int) -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">scale</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">5</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen CertConfiguration -&gt; Gen [CertConfiguration]
+forall a. Gen a -&gt; Gen [a]
+</span><span class="hs-identifier hs-var">listOf</span></span><span> </span><span class="annot"><span class="annottext">Gen CertConfiguration
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span>    </span><span id="local-6989586621679093830"><span class="annot"><span class="annottext">shrink :: TLSConfiguration -&gt; [TLSConfiguration]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">TLSConfiguration</span></a></span><span> </span><span id="local-6989586621679093828"><span class="annot"><span class="annottext">CertConfiguration
+</span><a href="#local-6989586621679093828"><span class="hs-identifier hs-var">ca</span></a></span></span><span> </span><span id="local-6989586621679093827"><span class="annot"><span class="annottext">ServerConfiguration
+</span><a href="#local-6989586621679093827"><span class="hs-identifier hs-var">server</span></a></span></span><span> </span><span id="local-6989586621679093826"><span class="annot"><span class="annottext">[CertConfiguration]
+</span><a href="#local-6989586621679093826"><span class="hs-identifier hs-var">clients</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-55"></span><span>        </span><span class="annot"><span class="annottext">CertConfiguration
+-&gt; ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">TLSConfiguration</span></a></span><span> </span><span class="annot"><span class="annottext">CertConfiguration
+</span><a href="#local-6989586621679093828"><span class="hs-identifier hs-var">ca</span></a></span><span> </span><span class="annot"><span class="annottext">ServerConfiguration
+</span><a href="#local-6989586621679093827"><span class="hs-identifier hs-var">server</span></a></span><span> </span><span class="annot"><span class="annottext">([CertConfiguration] -&gt; TLSConfiguration)
+-&gt; [[CertConfiguration]] -&gt; [TLSConfiguration]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[CertConfiguration] -&gt; [[CertConfiguration]]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[CertConfiguration]
+</span><a href="#local-6989586621679093826"><span class="hs-identifier hs-var">clients</span></a></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-type">Invalid</span></a></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">TLSConfiguration</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-59"></span><span>    </span><span id="local-6989586621679093823"><span class="annot"><span class="annottext">arbitrary :: Gen (Invalid TLSConfiguration)
+</span><a href="#local-6989586621679093823"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(TLSConfiguration -&gt; Invalid TLSConfiguration)
+-&gt; Gen TLSConfiguration -&gt; Gen (Invalid TLSConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">TLSConfiguration -&gt; Invalid TLSConfiguration
+forall a. a -&gt; Invalid a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen TLSConfiguration -&gt; Gen (Invalid TLSConfiguration))
+-&gt; Gen TLSConfiguration -&gt; Gen (Invalid TLSConfiguration)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CertConfiguration
+-&gt; ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">TLSConfiguration</span></a></span><span>
+</span><span id="line-60"></span><span>        </span><span class="annot"><span class="annottext">(CertConfiguration
+ -&gt; ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration)
+-&gt; Gen CertConfiguration
+-&gt; Gen
+     (ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen CertConfiguration
+forall a. (Show a, Arbitrary (Invalid a)) =&gt; Gen a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryInvalid"><span class="hs-identifier hs-var">arbitraryInvalid</span></a></span><span>
+</span><span id="line-61"></span><span>        </span><span class="annot"><span class="annottext">Gen
+  (ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration)
+-&gt; Gen ServerConfiguration
+-&gt; Gen ([CertConfiguration] -&gt; TLSConfiguration)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen ServerConfiguration
+forall a. (Show a, Arbitrary (Invalid a)) =&gt; Gen a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryInvalid"><span class="hs-identifier hs-var">arbitraryInvalid</span></a></span><span>
+</span><span id="line-62"></span><span>        </span><span class="annot"><span class="annottext">Gen ([CertConfiguration] -&gt; TLSConfiguration)
+-&gt; Gen [CertConfiguration] -&gt; Gen TLSConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int) -&gt; Gen [CertConfiguration] -&gt; Gen [CertConfiguration]
+forall a. (Int -&gt; Int) -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">scale</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`mod`</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">5</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen CertConfiguration -&gt; Gen [CertConfiguration]
+forall a. Gen a -&gt; Gen [a]
+</span><span class="hs-identifier hs-var">listOf</span></span><span> </span><span class="annot"><span class="annottext">Gen CertConfiguration
+forall a. (Show a, Arbitrary (Invalid a)) =&gt; Gen a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryInvalid"><span class="hs-identifier hs-var">arbitraryInvalid</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span>    </span><span id="local-6989586621679093821"><span class="annot"><span class="annottext">shrink :: Invalid TLSConfiguration -&gt; [Invalid TLSConfiguration]
+</span><a href="#local-6989586621679093821"><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-type">Invalid</span></a></span><span> </span><span id="local-6989586621679093820"><span class="annot"><span class="annottext">TLSConfiguration
+</span><a href="#local-6989586621679093820"><span class="hs-identifier hs-var">tlsConf</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-65"></span><span>        </span><span class="annot"><span class="annottext">TLSConfiguration -&gt; Invalid TLSConfiguration
+forall a. a -&gt; Invalid a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span><span> </span><span class="annot"><span class="annottext">(TLSConfiguration -&gt; Invalid TLSConfiguration)
+-&gt; [TLSConfiguration] -&gt; [Invalid TLSConfiguration]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">TLSConfiguration -&gt; [TLSConfiguration]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">TLSConfiguration
+</span><a href="#local-6989586621679093820"><span class="hs-identifier hs-var">tlsConf</span></a></span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">CertConfiguration</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-69"></span><span>    </span><span id="local-6989586621679093817"><span class="annot"><span class="annottext">arbitrary :: Gen CertConfiguration
+</span><a href="#local-6989586621679093817"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; Int -&gt; CertConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">CertConfiguration</span></a></span><span>
+</span><span id="line-70"></span><span>        </span><span class="annot"><span class="annottext">(String -&gt; String -&gt; Int -&gt; CertConfiguration)
+-&gt; Gen String -&gt; Gen (String -&gt; Int -&gt; CertConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; Gen String
+forall a. [a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">elements</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;IOHK&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Emurgo&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Cardano Foundation&quot;</span></span><span class="hs-special">]</span><span>
+</span><span id="line-71"></span><span>        </span><span class="annot"><span class="annottext">Gen (String -&gt; Int -&gt; CertConfiguration)
+-&gt; Gen String -&gt; Gen (Int -&gt; CertConfiguration)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; Gen String
+forall a. [a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">elements</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Daedalus Wallet&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Icarus Wallet&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Prometheus&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Root CA&quot;</span></span><span class="hs-special">]</span><span>
+</span><span id="line-72"></span><span>        </span><span class="annot"><span class="annottext">Gen (Int -&gt; CertConfiguration) -&gt; Gen Int -&gt; Gen CertConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen Int
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryPositive"><span class="hs-identifier hs-var">arbitraryPositive</span></a></span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span>    </span><span id="local-6989586621679093814"><span class="annot"><span class="annottext">shrink :: CertConfiguration -&gt; [CertConfiguration]
+</span><a href="#local-6989586621679093814"><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">CertConfiguration</span></a></span><span> </span><span id="local-6989586621679093813"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093813"><span class="hs-identifier hs-var">org</span></a></span></span><span> </span><span id="local-6989586621679093812"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093812"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679093811"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679093811"><span class="hs-identifier hs-var">days</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-75"></span><span>        </span><span class="annot"><span class="annottext">String -&gt; String -&gt; Int -&gt; CertConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">CertConfiguration</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093813"><span class="hs-identifier hs-var">org</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093812"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; CertConfiguration)
+-&gt; (Positive Int -&gt; Int) -&gt; Positive Int -&gt; CertConfiguration
+forall k (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Positive Int -&gt; Int
+forall a. Positive a -&gt; a
+</span><span class="hs-identifier hs-var hs-var">getPositive</span></span><span> </span><span class="annot"><span class="annottext">(Positive Int -&gt; CertConfiguration)
+-&gt; [Positive Int] -&gt; [CertConfiguration]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Positive Int -&gt; [Positive Int]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Positive Int
+forall a. a -&gt; Positive a
+</span><span class="hs-identifier hs-var">Positive</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679093811"><span class="hs-identifier hs-var">days</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-type">Invalid</span></a></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">CertConfiguration</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-79"></span><span>    </span><span id="local-6989586621679093805"><span class="annot"><span class="annottext">arbitrary :: Gen (Invalid CertConfiguration)
+</span><a href="#local-6989586621679093805"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(CertConfiguration -&gt; Invalid CertConfiguration)
+-&gt; Gen CertConfiguration -&gt; Gen (Invalid CertConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">CertConfiguration -&gt; Invalid CertConfiguration
+forall a. a -&gt; Invalid a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen CertConfiguration -&gt; Gen (Invalid CertConfiguration))
+-&gt; Gen CertConfiguration -&gt; Gen (Invalid CertConfiguration)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; Int -&gt; CertConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">CertConfiguration</span></a></span><span>
+</span><span id="line-80"></span><span>        </span><span class="annot"><span class="annottext">(String -&gt; String -&gt; Int -&gt; CertConfiguration)
+-&gt; Gen String -&gt; Gen (String -&gt; Int -&gt; CertConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; Gen String
+forall a. [a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">elements</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;IOHK&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Emurgo&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Cardano Foundation&quot;</span></span><span class="hs-special">]</span><span>
+</span><span id="line-81"></span><span>        </span><span class="annot"><span class="annottext">Gen (String -&gt; Int -&gt; CertConfiguration)
+-&gt; Gen String -&gt; Gen (Int -&gt; CertConfiguration)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; Gen String
+forall a. [a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">elements</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Daedalus Wallet&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Icarus Wallet&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Prometheus&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Root CA&quot;</span></span><span class="hs-special">]</span><span>
+</span><span id="line-82"></span><span>        </span><span class="annot"><span class="annottext">Gen (Int -&gt; CertConfiguration) -&gt; Gen Int -&gt; Gen CertConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; Gen Int
+forall a. Random a =&gt; (a, a) -&gt; Gen a
+</span><span class="hs-identifier hs-var">choose</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">10</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">10</span></span><span class="hs-special">)</span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span>    </span><span id="local-6989586621679093804"><span class="annot"><span class="annottext">shrink :: Invalid CertConfiguration -&gt; [Invalid CertConfiguration]
+</span><a href="#local-6989586621679093804"><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-type">Invalid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">CertConfiguration</span></a></span><span> </span><span id="local-6989586621679093803"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093803"><span class="hs-identifier hs-var">org</span></a></span></span><span> </span><span id="local-6989586621679093802"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093802"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679093801"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679093801"><span class="hs-identifier hs-var">days</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-85"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CertConfiguration -&gt; Invalid CertConfiguration
+forall a. a -&gt; Invalid a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span><span> </span><span class="annot"><span class="annottext">(CertConfiguration -&gt; Invalid CertConfiguration)
+-&gt; (Int -&gt; CertConfiguration) -&gt; Int -&gt; Invalid CertConfiguration
+forall k (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; Int -&gt; CertConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">CertConfiguration</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093803"><span class="hs-identifier hs-var">org</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093802"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Invalid CertConfiguration)
+-&gt; [Int] -&gt; [Invalid CertConfiguration]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Int]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679093801"><span class="hs-identifier hs-var">days</span></a></span><span>
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span>
+</span><span id="line-88"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">ServerConfiguration</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-89"></span><span>    </span><span id="local-6989586621679093798"><span class="annot"><span class="annottext">arbitrary :: Gen ServerConfiguration
+</span><a href="#local-6989586621679093798"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CertConfiguration -&gt; NonEmpty String -&gt; ServerConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">ServerConfiguration</span></a></span><span>
+</span><span id="line-90"></span><span>        </span><span class="annot"><span class="annottext">(CertConfiguration -&gt; NonEmpty String -&gt; ServerConfiguration)
+-&gt; Gen CertConfiguration
+-&gt; Gen (NonEmpty String -&gt; ServerConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen CertConfiguration
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-91"></span><span>        </span><span class="annot"><span class="annottext">Gen (NonEmpty String -&gt; ServerConfiguration)
+-&gt; Gen (NonEmpty String) -&gt; Gen ServerConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(AltNames -&gt; NonEmpty String)
+-&gt; Gen AltNames -&gt; Gen (NonEmpty String)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">AltNames -&gt; NonEmpty String
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#getAltNames"><span class="hs-identifier hs-var hs-var">getAltNames</span></a></span><span> </span><span class="annot"><span class="annottext">Gen AltNames
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-92"></span><span>
+</span><span id="line-93"></span><span>    </span><span id="local-6989586621679093796"><span class="annot"><span class="annottext">shrink :: ServerConfiguration -&gt; [ServerConfiguration]
+</span><a href="#local-6989586621679093796"><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">ServerConfiguration</span></a></span><span> </span><span id="local-6989586621679093795"><span class="annot"><span class="annottext">CertConfiguration
+</span><a href="#local-6989586621679093795"><span class="hs-identifier hs-var">cert</span></a></span></span><span> </span><span id="local-6989586621679093794"><span class="annot"><span class="annottext">NonEmpty String
+</span><a href="#local-6989586621679093794"><span class="hs-identifier hs-var">altNames</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-94"></span><span>        </span><span class="annot"><span class="annottext">(CertConfiguration, AltNames) -&gt; ServerConfiguration
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#mkServerConfiguration"><span class="hs-identifier hs-var">mkServerConfiguration</span></a></span><span> </span><span class="annot"><span class="annottext">((CertConfiguration, AltNames) -&gt; ServerConfiguration)
+-&gt; [(CertConfiguration, AltNames)] -&gt; [ServerConfiguration]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(CertConfiguration, AltNames) -&gt; [(CertConfiguration, AltNames)]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CertConfiguration
+</span><a href="#local-6989586621679093795"><span class="hs-identifier hs-var">cert</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">NonEmpty String -&gt; AltNames
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier hs-var">AltNames</span></a></span><span> </span><span class="annot"><span class="annottext">NonEmpty String
+</span><a href="#local-6989586621679093794"><span class="hs-identifier hs-var">altNames</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span>
+</span><span id="line-97"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-type">Invalid</span></a></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">ServerConfiguration</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-98"></span><span>    </span><span id="local-6989586621679093790"><span class="annot"><span class="annottext">arbitrary :: Gen (Invalid ServerConfiguration)
+</span><a href="#local-6989586621679093790"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ServerConfiguration -&gt; Invalid ServerConfiguration)
+-&gt; Gen ServerConfiguration -&gt; Gen (Invalid ServerConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">ServerConfiguration -&gt; Invalid ServerConfiguration
+forall a. a -&gt; Invalid a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen ServerConfiguration -&gt; Gen (Invalid ServerConfiguration))
+-&gt; Gen ServerConfiguration -&gt; Gen (Invalid ServerConfiguration)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CertConfiguration -&gt; NonEmpty String -&gt; ServerConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">ServerConfiguration</span></a></span><span>
+</span><span id="line-99"></span><span>        </span><span class="annot"><span class="annottext">(CertConfiguration -&gt; NonEmpty String -&gt; ServerConfiguration)
+-&gt; Gen CertConfiguration
+-&gt; Gen (NonEmpty String -&gt; ServerConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen CertConfiguration
+forall a. (Show a, Arbitrary (Invalid a)) =&gt; Gen a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryInvalid"><span class="hs-identifier hs-var">arbitraryInvalid</span></a></span><span>
+</span><span id="line-100"></span><span>        </span><span class="annot"><span class="annottext">Gen (NonEmpty String -&gt; ServerConfiguration)
+-&gt; Gen (NonEmpty String) -&gt; Gen ServerConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(AltNames -&gt; NonEmpty String)
+-&gt; Gen AltNames -&gt; Gen (NonEmpty String)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">AltNames -&gt; NonEmpty String
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#getAltNames"><span class="hs-identifier hs-var hs-var">getAltNames</span></a></span><span> </span><span class="annot"><span class="annottext">Gen AltNames
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-101"></span><span>
+</span><span id="line-102"></span><span>    </span><span id="local-6989586621679093789"><span class="annot"><span class="annottext">shrink :: Invalid ServerConfiguration -&gt; [Invalid ServerConfiguration]
+</span><a href="#local-6989586621679093789"><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-type">Invalid</span></a></span><span> </span><span id="local-6989586621679093788"><span class="annot"><span class="annottext">ServerConfiguration
+</span><a href="#local-6989586621679093788"><span class="hs-identifier hs-var">serverConf</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-103"></span><span>        </span><span class="annot"><span class="annottext">ServerConfiguration -&gt; Invalid ServerConfiguration
+forall a. a -&gt; Invalid a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span><span> </span><span class="annot"><span class="annottext">(ServerConfiguration -&gt; Invalid ServerConfiguration)
+-&gt; [ServerConfiguration] -&gt; [Invalid ServerConfiguration]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ServerConfiguration -&gt; [ServerConfiguration]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">ServerConfiguration
+</span><a href="#local-6989586621679093788"><span class="hs-identifier hs-var">serverConf</span></a></span><span>
+</span><span id="line-104"></span><span>
+</span><span id="line-105"></span><span>
+</span><span id="line-106"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">DirConfiguration</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-107"></span><span>    </span><span id="local-6989586621679093785"><span class="annot"><span class="annottext">arbitrary :: Gen DirConfiguration
+</span><a href="#local-6989586621679093785"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; Maybe String -&gt; DirConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">DirConfiguration</span></a></span><span>
+</span><span id="line-108"></span><span>        </span><span class="annot"><span class="annottext">(String -&gt; String -&gt; Maybe String -&gt; DirConfiguration)
+-&gt; Gen String -&gt; Gen (String -&gt; Maybe String -&gt; DirConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen String
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryBasicString"><span class="hs-identifier hs-var">arbitraryBasicString</span></a></span><span>
+</span><span id="line-109"></span><span>        </span><span class="annot"><span class="annottext">Gen (String -&gt; Maybe String -&gt; DirConfiguration)
+-&gt; Gen String -&gt; Gen (Maybe String -&gt; DirConfiguration)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen String
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryBasicString"><span class="hs-identifier hs-var">arbitraryBasicString</span></a></span><span>
+</span><span id="line-110"></span><span>        </span><span class="annot"><span class="annottext">Gen (Maybe String -&gt; DirConfiguration)
+-&gt; Gen (Maybe String) -&gt; Gen DirConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Gen (Maybe String)] -&gt; Gen (Maybe String)
+forall a. [Gen a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">oneof</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Maybe String -&gt; Gen (Maybe String)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Maybe String
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe String
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe String) -&gt; Gen String -&gt; Gen (Maybe String)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen String
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryBasicString"><span class="hs-identifier hs-var">arbitraryBasicString</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-111"></span><span>
+</span><span id="line-112"></span><span>    </span><span id="local-6989586621679093782"><span class="annot"><span class="annottext">shrink :: DirConfiguration -&gt; [DirConfiguration]
+</span><a href="#local-6989586621679093782"><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></a></span></span><span> </span><span class="annot"><span class="annottext">DirConfiguration
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier hs-type">AltNames</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-116"></span><span>    </span><span id="local-6989586621679093779"><span class="annot"><span class="annottext">arbitrary :: Gen AltNames
+</span><a href="#local-6989586621679093779"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-117"></span><span>        </span><span class="annot"><span class="annottext">([String] -&gt; AltNames) -&gt; Gen [String] -&gt; Gen AltNames
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; AltNames
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#mkAltNames"><span class="hs-identifier hs-var">mkAltNames</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen [String] -&gt; Gen AltNames) -&gt; Gen [String] -&gt; Gen AltNames
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Gen String -&gt; Gen [String]
+forall a. Gen a -&gt; Gen [a]
+</span><span class="hs-identifier hs-var">listOf1</span></span><span> </span><span class="annot"><span class="annottext">(Gen String -&gt; Gen [String]) -&gt; Gen String -&gt; Gen [String]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; Gen String
+forall a. [a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">elements</span></span><span>
+</span><span id="line-118"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;localhost&quot;</span></span><span>
+</span><span id="line-119"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;localhost.localdomain&quot;</span></span><span>
+</span><span id="line-120"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;127.0.0.1&quot;</span></span><span>
+</span><span id="line-121"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;::1&quot;</span></span><span>
+</span><span id="line-122"></span><span>            </span><span class="hs-special">]</span><span>
+</span><span id="line-123"></span><span>
+</span><span id="line-124"></span><span>    </span><span id="local-6989586621679093777"><span class="annot"><span class="annottext">shrink :: AltNames -&gt; [AltNames]
+</span><a href="#local-6989586621679093777"><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier hs-type">AltNames</span></a></span><span> </span><span id="local-6989586621679093776"><span class="annot"><span class="annottext">NonEmpty String
+</span><a href="#local-6989586621679093776"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-125"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">NonEmpty String
+</span><a href="#local-6989586621679093776"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-126"></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-127"></span><span>            </span><span class="hs-special">(</span><span id="local-6989586621679093774"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093774"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span id="local-6989586621679093773"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679093773"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-128"></span><span>                </span><span class="annot"><span class="annottext">[String] -&gt; AltNames
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#mkAltNames"><span class="hs-identifier hs-var">mkAltNames</span></a></span><span> </span><span class="annot"><span class="annottext">([String] -&gt; AltNames) -&gt; [[String]] -&gt; [AltNames]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">([String] -&gt; Bool) -&gt; [[String]] -&gt; [[String]]
+forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool) -&gt; ([String] -&gt; Bool) -&gt; [String] -&gt; Bool
+forall k (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">null</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[String] -&gt; [[String]]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679093774"><span class="hs-identifier hs-var">x</span></a></span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; [String]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679093773"><span class="hs-identifier hs-var">rest</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-129"></span><span>
+</span><span id="line-130"></span><span>
+</span><span id="line-131"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Unknown"><span class="hs-identifier hs-type">Unknown</span></a></span><span> </span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier hs-type">AltNames</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-132"></span><span>    </span><span id="local-6989586621679093768"><span class="annot"><span class="annottext">arbitrary :: Gen (Unknown AltNames)
+</span><a href="#local-6989586621679093768"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-133"></span><span>        </span><span class="annot"><span class="annottext">([String] -&gt; Unknown AltNames)
+-&gt; Gen [String] -&gt; Gen (Unknown AltNames)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">AltNames -&gt; Unknown AltNames
+forall a. a -&gt; Unknown a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Unknown"><span class="hs-identifier hs-var">Unknown</span></a></span><span> </span><span class="annot"><span class="annottext">(AltNames -&gt; Unknown AltNames)
+-&gt; ([String] -&gt; AltNames) -&gt; [String] -&gt; Unknown AltNames
+forall k (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; AltNames
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#mkAltNames"><span class="hs-identifier hs-var">mkAltNames</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen [String] -&gt; Gen (Unknown AltNames))
+-&gt; Gen [String] -&gt; Gen (Unknown AltNames)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Gen String -&gt; Gen [String]
+forall a. Gen a -&gt; Gen [a]
+</span><span class="hs-identifier hs-var">listOf1</span></span><span> </span><span class="annot"><span class="annottext">(Gen String -&gt; Gen [String]) -&gt; Gen String -&gt; Gen [String]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; Gen String
+forall a. [a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">elements</span></span><span>
+</span><span id="line-134"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;www.iohk.io&quot;</span></span><span>
+</span><span id="line-135"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;14.14.14.14&quot;</span></span><span>
+</span><span id="line-136"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;2607:f0d0:1002:0051:0000:0000:0000:0004&quot;</span></span><span>
+</span><span id="line-137"></span><span>            </span><span class="hs-special">]</span><span>
+</span><span id="line-138"></span><span>
+</span><span id="line-139"></span><span>    </span><span id="local-6989586621679093767"><span class="annot"><span class="annottext">shrink :: Unknown AltNames -&gt; [Unknown AltNames]
+</span><a href="#local-6989586621679093767"><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Unknown"><span class="hs-identifier hs-type">Unknown</span></a></span><span> </span><span id="local-6989586621679093766"><span class="annot"><span class="annottext">AltNames
+</span><a href="#local-6989586621679093766"><span class="hs-identifier hs-var">altNames</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-140"></span><span>        </span><span class="annot"><span class="annottext">AltNames -&gt; Unknown AltNames
+forall a. a -&gt; Unknown a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Unknown"><span class="hs-identifier hs-var">Unknown</span></a></span><span> </span><span class="annot"><span class="annottext">(AltNames -&gt; Unknown AltNames) -&gt; [AltNames] -&gt; [Unknown AltNames]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">AltNames -&gt; [AltNames]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">AltNames
+</span><a href="#local-6989586621679093766"><span class="hs-identifier hs-var">altNames</span></a></span><span>
+</span><span id="line-141"></span><span>
+</span><span id="line-142"></span><span>
+</span><span id="line-143"></span><span class="hs-comment">--</span><span>
+</span><span id="line-144"></span><span class="hs-comment">-- Internals</span><span>
+</span><span id="line-145"></span><span class="hs-comment">--</span><span>
+</span><span id="line-146"></span><span>
+</span><span id="line-147"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#mkAltNames"><span class="hs-identifier hs-type">mkAltNames</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier hs-type">AltNames</span></a></span><span>
+</span><span id="line-148"></span><span id="mkAltNames"><span class="annot"><span class="annottext">mkAltNames :: [String] -&gt; AltNames
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#mkAltNames"><span class="hs-identifier hs-var hs-var">mkAltNames</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-149"></span><span>    </span><span class="annot"><span class="annottext">NonEmpty String -&gt; AltNames
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier hs-var">AltNames</span></a></span><span> </span><span class="annot"><span class="annottext">(NonEmpty String -&gt; AltNames)
+-&gt; ([String] -&gt; NonEmpty String) -&gt; [String] -&gt; AltNames
+forall k (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; NonEmpty String
+forall a. [a] -&gt; NonEmpty a
+</span><span class="hs-identifier hs-var">NonEmpty.fromList</span></span><span> </span><span class="annot"><span class="annottext">([String] -&gt; NonEmpty String)
+-&gt; ([String] -&gt; [String]) -&gt; [String] -&gt; NonEmpty String
+forall k (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; [String]
+forall a. Eq a =&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">List.nub</span></span><span>
+</span><span id="line-150"></span><span>
+</span><span id="line-151"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#mkServerConfiguration"><span class="hs-identifier hs-type">mkServerConfiguration</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">CertConfiguration</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#AltNames"><span class="hs-identifier hs-type">AltNames</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">ServerConfiguration</span></a></span><span>
+</span><span id="line-152"></span><span id="mkServerConfiguration"><span class="annot"><span class="annottext">mkServerConfiguration :: (CertConfiguration, AltNames) -&gt; ServerConfiguration
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#mkServerConfiguration"><span class="hs-identifier hs-var hs-var">mkServerConfiguration</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-153"></span><span>    </span><span class="annot"><span class="annottext">(CertConfiguration -&gt; NonEmpty String -&gt; ServerConfiguration)
+-&gt; (CertConfiguration, NonEmpty String) -&gt; ServerConfiguration
+forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
+</span><span class="hs-identifier hs-var">uncurry</span></span><span> </span><span class="annot"><span class="annottext">CertConfiguration -&gt; NonEmpty String -&gt; ServerConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">ServerConfiguration</span></a></span><span> </span><span class="annot"><span class="annottext">((CertConfiguration, NonEmpty String) -&gt; ServerConfiguration)
+-&gt; ((CertConfiguration, AltNames)
+    -&gt; (CertConfiguration, NonEmpty String))
+-&gt; (CertConfiguration, AltNames)
+-&gt; ServerConfiguration
+forall k (cat :: k -&gt; k -&gt; *) (b :: k) (c :: k) (a :: k).
+Category cat =&gt;
+cat b c -&gt; cat a b -&gt; cat a c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(AltNames -&gt; NonEmpty String)
+-&gt; (CertConfiguration, AltNames)
+-&gt; (CertConfiguration, NonEmpty String)
+forall (p :: * -&gt; * -&gt; *) b c a.
+Bifunctor p =&gt;
+(b -&gt; c) -&gt; p a b -&gt; p a c
+</span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="annot"><span class="annottext">AltNames -&gt; NonEmpty String
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#getAltNames"><span class="hs-identifier hs-var hs-var">getAltNames</span></a></span><span>
+</span><span id="line-154"></span><span>
+</span><span id="line-155"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryPositive"><span class="hs-identifier hs-type">arbitraryPositive</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-156"></span><span id="arbitraryPositive"><span class="annot"><span class="annottext">arbitraryPositive :: Gen Int
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryPositive"><span class="hs-identifier hs-var hs-var">arbitraryPositive</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Positive Int -&gt; Int) -&gt; Gen (Positive Int) -&gt; Gen Int
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Positive Int -&gt; Int
+forall a. Positive a -&gt; a
+</span><span class="hs-identifier hs-var hs-var">getPositive</span></span><span> </span><span class="annot"><span class="annottext">Gen (Positive Int)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-157"></span><span>
+</span><span id="line-158"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryBasicString"><span class="hs-identifier hs-type">arbitraryBasicString</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-159"></span><span id="arbitraryBasicString"><span class="annot"><span class="annottext">arbitraryBasicString :: Gen String
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryBasicString"><span class="hs-identifier hs-var hs-var">arbitraryBasicString</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-160"></span><span>    </span><span class="annot"><span class="annottext">Gen Char -&gt; Gen String
+forall a. Gen a -&gt; Gen [a]
+</span><span class="hs-identifier hs-var">listOf</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen Char -&gt; (Char -&gt; Bool) -&gt; Gen Char
+forall a. Gen a -&gt; (a -&gt; Bool) -&gt; Gen a
+</span><span class="hs-identifier hs-var">suchThat</span></span><span> </span><span class="annot"><span class="annottext">Gen Char
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">Char.isLetter</span></span><span class="hs-special">)</span><span>
+</span><span id="line-161"></span><span>
+</span><span id="line-162"></span><span id="local-6989586621679093903"><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryInvalid"><span class="hs-identifier hs-type">arbitraryInvalid</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679093903"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.Arbitrary.html#Invalid"><span class="hs-identifier hs-type">Invalid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679093903"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><a href="#local-6989586621679093903"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-163"></span><span id="arbitraryInvalid"><span class="annot"><span class="annottext">arbitraryInvalid :: Gen a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#arbitraryInvalid"><span class="hs-identifier hs-var hs-var">arbitraryInvalid</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-164"></span><span>    </span><span class="annot"><span class="annottext">(Invalid a -&gt; a) -&gt; Gen (Invalid a) -&gt; Gen a
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Invalid a -&gt; a
+forall a. Show a =&gt; Invalid a -&gt; a
+</span><a href="Test.Cardano.X509.Configuration.Arbitrary.html#getInvalid"><span class="hs-identifier hs-var hs-var">getInvalid</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (Invalid a)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-165"></span></pre></body></html>

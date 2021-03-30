@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE TemplateHaskell #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Test.Cardano.X509.Configuration</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Test.Cardano.X509.Configuration.html#tests"><span class="hs-identifier">tests</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier">Cardano.X509.Configuration</span></a></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Hedgehog</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Gen</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Property</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Group</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">discover</span></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Hedgehog.Internal.TH</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">TExpQ</span></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Hedgehog</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">H</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Hedgehog.Gen</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Gen</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Hedgehog.Range</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Range</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Cardano.Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">head</span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">tail</span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Prelude</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">String</span></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-comment">-- TODO(KS): Yes, this is too complicated to import since it requires a lot.</span><span>
+</span><span id="line-15"></span><span class="hs-comment">--roundTripTLSConfiguration :: Property</span><span>
+</span><span id="line-16"></span><span class="hs-comment">--roundTripTLSConfiguration = roundTripsAesonYamlShow 100 genTlsConfig</span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.html#genTlsConfig"><span class="hs-identifier hs-type">genTlsConfig</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">TLSConfiguration</span></a></span><span>
+</span><span id="line-19"></span><span id="genTlsConfig"><span class="annot"><span class="annottext">genTlsConfig :: Gen TLSConfiguration
+</span><a href="Test.Cardano.X509.Configuration.html#genTlsConfig"><span class="hs-identifier hs-var hs-var">genTlsConfig</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CertConfiguration
+-&gt; ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">TLSConfiguration</span></a></span><span> </span><span class="annot"><span class="annottext">(CertConfiguration
+ -&gt; ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration)
+-&gt; GenT Identity CertConfiguration
+-&gt; GenT
+     Identity
+     (ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">GenT Identity CertConfiguration
+</span><a href="Test.Cardano.X509.Configuration.html#genCertConfig"><span class="hs-identifier hs-var">genCertConfig</span></a></span><span> </span><span class="annot"><span class="annottext">GenT
+  Identity
+  (ServerConfiguration -&gt; [CertConfiguration] -&gt; TLSConfiguration)
+-&gt; GenT Identity ServerConfiguration
+-&gt; GenT Identity ([CertConfiguration] -&gt; TLSConfiguration)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">GenT Identity ServerConfiguration
+</span><a href="Test.Cardano.X509.Configuration.html#genServerConfig"><span class="hs-identifier hs-var">genServerConfig</span></a></span><span> </span><span class="annot"><span class="annottext">GenT Identity ([CertConfiguration] -&gt; TLSConfiguration)
+-&gt; GenT Identity [CertConfiguration] -&gt; Gen TLSConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">GenT Identity [CertConfiguration]
+</span><a href="Test.Cardano.X509.Configuration.html#genClients"><span class="hs-identifier hs-var">genClients</span></a></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.html#genCertConfig"><span class="hs-identifier hs-type">genCertConfig</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">CertConfiguration</span></a></span><span>
+</span><span id="line-22"></span><span id="genCertConfig"><span class="annot"><span class="annottext">genCertConfig :: GenT Identity CertConfiguration
+</span><a href="Test.Cardano.X509.Configuration.html#genCertConfig"><span class="hs-identifier hs-var hs-var">genCertConfig</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; Int -&gt; CertConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">CertConfiguration</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; String -&gt; Int -&gt; CertConfiguration)
+-&gt; GenT Identity String
+-&gt; GenT Identity (String -&gt; Int -&gt; CertConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">GenT Identity String
+</span><a href="Test.Cardano.X509.Configuration.html#genString"><span class="hs-identifier hs-var">genString</span></a></span><span> </span><span class="annot"><span class="annottext">GenT Identity (String -&gt; Int -&gt; CertConfiguration)
+-&gt; GenT Identity String -&gt; GenT Identity (Int -&gt; CertConfiguration)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">GenT Identity String
+</span><a href="Test.Cardano.X509.Configuration.html#genString"><span class="hs-identifier hs-var">genString</span></a></span><span> </span><span class="annot"><span class="annottext">GenT Identity (Int -&gt; CertConfiguration)
+-&gt; GenT Identity Int -&gt; GenT Identity CertConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">GenT Identity Int
+</span><a href="Test.Cardano.X509.Configuration.html#genInt"><span class="hs-identifier hs-var">genInt</span></a></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.html#genServerConfig"><span class="hs-identifier hs-type">genServerConfig</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">ServerConfiguration</span></a></span><span>
+</span><span id="line-25"></span><span id="genServerConfig"><span class="annot"><span class="annottext">genServerConfig :: GenT Identity ServerConfiguration
+</span><a href="Test.Cardano.X509.Configuration.html#genServerConfig"><span class="hs-identifier hs-var hs-var">genServerConfig</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CertConfiguration -&gt; NonEmpty String -&gt; ServerConfiguration
+</span><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-var">ServerConfiguration</span></a></span><span> </span><span class="annot"><span class="annottext">(CertConfiguration -&gt; NonEmpty String -&gt; ServerConfiguration)
+-&gt; GenT Identity CertConfiguration
+-&gt; GenT Identity (NonEmpty String -&gt; ServerConfiguration)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">GenT Identity CertConfiguration
+</span><a href="Test.Cardano.X509.Configuration.html#genCertConfig"><span class="hs-identifier hs-var">genCertConfig</span></a></span><span> </span><span class="annot"><span class="annottext">GenT Identity (NonEmpty String -&gt; ServerConfiguration)
+-&gt; GenT Identity (NonEmpty String)
+-&gt; GenT Identity ServerConfiguration
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">GenT Identity (NonEmpty String)
+</span><a href="Test.Cardano.X509.Configuration.html#genNonEmptyString"><span class="hs-identifier hs-var">genNonEmptyString</span></a></span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.html#genClients"><span class="hs-identifier hs-type">genClients</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../file:///home/runner/work/cardano-sl-x509/cardano-sl-x509/dist-newstyle/build/x86_64-linux/ghc-8.10.4/cardano-sl-x509-3.0.0/noopt/doc/html/cardano-sl-x509/src"><span class="hs-identifier hs-type">CertConfiguration</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-28"></span><span id="genClients"><span class="annot"><span class="annottext">genClients :: GenT Identity [CertConfiguration]
+</span><a href="Test.Cardano.X509.Configuration.html#genClients"><span class="hs-identifier hs-var hs-var">genClients</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Range Int
+-&gt; GenT Identity CertConfiguration
+-&gt; GenT Identity [CertConfiguration]
+forall (m :: * -&gt; *) a. MonadGen m =&gt; Range Int -&gt; m a -&gt; m [a]
+</span><span class="hs-identifier hs-var">Gen.list</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Range Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a -&gt; Range a
+</span><span class="hs-identifier hs-var">Range.linearFrom</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">10</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">GenT Identity CertConfiguration
+</span><a href="Test.Cardano.X509.Configuration.html#genCertConfig"><span class="hs-identifier hs-var">genCertConfig</span></a></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.html#genString"><span class="hs-identifier hs-type">genString</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-31"></span><span id="genString"><span class="annot"><span class="annottext">genString :: GenT Identity String
+</span><a href="Test.Cardano.X509.Configuration.html#genString"><span class="hs-identifier hs-var hs-var">genString</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Range Int -&gt; GenT Identity Char -&gt; GenT Identity String
+forall (m :: * -&gt; *). MonadGen m =&gt; Range Int -&gt; m Char -&gt; m String
+</span><span class="hs-identifier hs-var">Gen.string</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Range Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a -&gt; Range a
+</span><span class="hs-identifier hs-var">Range.linearFrom</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">10</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">GenT Identity Char
+forall (m :: * -&gt; *). MonadGen m =&gt; m Char
+</span><span class="hs-identifier hs-var">Gen.ascii</span></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.html#genNonEmptyString"><span class="hs-identifier hs-type">genNonEmptyString</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span id="genNonEmptyString"><span class="annot"><span class="annottext">genNonEmptyString :: GenT Identity (NonEmpty String)
+</span><a href="Test.Cardano.X509.Configuration.html#genNonEmptyString"><span class="hs-identifier hs-var hs-var">genNonEmptyString</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-35"></span><span>  </span><span id="local-6989586621679093705"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679093705"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Range Int -&gt; GenT Identity Int
+forall (m :: * -&gt; *) a. (MonadGen m, Integral a) =&gt; Range a -&gt; m a
+</span><span class="hs-identifier hs-var">Gen.integral</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Range Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a -&gt; Range a
+</span><span class="hs-identifier hs-var">Range.linearFrom</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">20</span></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>  </span><span class="annot"><span class="annottext">GenT Identity String -&gt; Int -&gt; GenT Identity (NonEmpty String)
+forall a. Gen a -&gt; Int -&gt; Gen (NonEmpty a)
+</span><a href="Test.Cardano.X509.Configuration.html#genNonEmpty"><span class="hs-identifier hs-var">genNonEmpty</span></a></span><span> </span><span class="annot"><span class="annottext">GenT Identity String
+</span><a href="Test.Cardano.X509.Configuration.html#genString"><span class="hs-identifier hs-var">genString</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679093705"><span class="hs-identifier hs-var">len</span></a></span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span id="local-6989586621679093737"><span class="annot"><a href="Test.Cardano.X509.Configuration.html#genNonEmpty"><span class="hs-identifier hs-type">genNonEmpty</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><a href="#local-6989586621679093737"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span class="annot"><a href="#local-6989586621679093737"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-39"></span><span id="genNonEmpty"><span class="annot"><span class="annottext">genNonEmpty :: Gen a -&gt; Int -&gt; Gen (NonEmpty a)
+</span><a href="Test.Cardano.X509.Configuration.html#genNonEmpty"><span class="hs-identifier hs-var hs-var">genNonEmpty</span></a></span></span><span> </span><span id="local-6989586621679093702"><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679093702"><span class="hs-identifier hs-var">genA</span></a></span></span><span> </span><span id="local-6989586621679093701"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679093701"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-40"></span><span>  </span><span id="local-6989586621679093700"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679093700"><span class="hs-identifier hs-var">head</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679093702"><span class="hs-identifier hs-var">genA</span></a></span><span>
+</span><span id="line-41"></span><span>  </span><span id="local-6989586621679093699"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679093699"><span class="hs-identifier hs-var">tail</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Range Int -&gt; Gen a -&gt; GenT Identity [a]
+forall (m :: * -&gt; *) a. MonadGen m =&gt; Range Int -&gt; m a -&gt; m [a]
+</span><span class="hs-identifier hs-var">Gen.list</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Range Int
+forall a. Integral a =&gt; a -&gt; a -&gt; Range a
+</span><span class="hs-identifier hs-var">Range.linear</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679093701"><span class="hs-identifier hs-var">len</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679093702"><span class="hs-identifier hs-var">genA</span></a></span><span>
+</span><span id="line-42"></span><span>  </span><span class="annot"><span class="annottext">NonEmpty a -&gt; Gen (NonEmpty a)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679093700"><span class="hs-identifier hs-var">head</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; NonEmpty a
+forall a. a -&gt; [a] -&gt; NonEmpty a
+</span><span class="hs-operator hs-var">:|</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679093699"><span class="hs-identifier hs-var">tail</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.html#genInt"><span class="hs-identifier hs-type">genInt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-45"></span><span id="genInt"><span class="annot"><span class="annottext">genInt :: GenT Identity Int
+</span><a href="Test.Cardano.X509.Configuration.html#genInt"><span class="hs-identifier hs-var hs-var">genInt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Range Int -&gt; GenT Identity Int
+forall (m :: * -&gt; *) a. (MonadGen m, Integral a) =&gt; Range a -&gt; m a
+</span><span class="hs-identifier hs-var">Gen.integral</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Range Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a -&gt; Range a
+</span><span class="hs-identifier hs-var">Range.linearFrom</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">10</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">10</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">20</span></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="annot"><a href="Test.Cardano.X509.Configuration.html#tests"><span class="hs-identifier hs-type">tests</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-48"></span><span id="tests"><span class="annot"><span class="annottext">tests :: IO Bool
+</span><a href="Test.Cardano.X509.Configuration.html#tests"><span class="hs-identifier hs-var hs-var">tests</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Group -&gt; IO Bool
+forall (m :: * -&gt; *). MonadIO m =&gt; Group -&gt; m Bool
+</span><span class="hs-identifier hs-var">H.checkParallel</span></span><span> </span><span class="hs-special">$$(</span><span class="annot"><span class="annottext">String
+[(PropertyName, Property)]
+String -&gt; GroupName
+GroupName -&gt; [(PropertyName, Property)] -&gt; Group
+</span><span class="hs-identifier hs-var hs-var hs-var">discover</span></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span></pre></body></html>
