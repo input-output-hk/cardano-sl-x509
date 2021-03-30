@@ -1,0 +1,55 @@
+name: Haskell CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc: ["8.10.4"]
+
+    steps:
+    - name: Install Haskell
+      uses: haskell/actions/setup@v1
+      id: setup-haskell
+      with:
+        ghc-version: ${{ matrix.ghc }}
+        cabal-version: '3.4.0.0'
+
+    - name: Show Haskell tool versions
+      run: |
+        ghc --version
+        cabal --version
+
+    - name: Set cache version
+      run: echo "CACHE_VERSION=9w76Z3Q" >> $GITHUB_ENV
+
+    - uses: actions/checkout@v2
+
+    - name: Cache cabal store
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.setup-haskell.outputs.cabal-store }}
+        key: cabal-store-${{ env.CACHE_VERSION }}-${{ matrix.ghc }}-${{ matrix.os }}
+
+    - name: Update Hackage index
+      run: cabal update
+
+    - name: Cabal Configure
+      run: cabal configure --enable-tests
+
+    - name: Build dependencies
+      run: cabal build --only-dependencies all
+
+    - name: Build projects
+      run: cabal build all
+
+    - name: Test projects
+      run: cabal build all
