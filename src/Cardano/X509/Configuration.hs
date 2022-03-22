@@ -57,6 +57,8 @@ import           Time.Types (DateTime (..))
 import           Data.X509.Extra (parseSAN, signAlgRSA256, signCertificate)
 
 import           Data.Aeson
+import qualified Data.Aeson.Key as Aeson
+import qualified Data.Aeson.KeyMap as Aeson
 import qualified Data.Aeson.Types as Aeson
 import qualified Data.HashMap.Lazy as HM
 import qualified Data.List.NonEmpty as NonEmpty
@@ -267,7 +269,7 @@ decodeConfigFile (ConfigurationKey cKey) filepath =
     parser = withObject "TLS Configuration" (parseK cKey >=> parseK "tls")
 
     parseK :: FromJSON a => String -> Aeson.Object -> Aeson.Parser a
-    parseK key = maybe (fail $ errMsg key) parseJSON . HM.lookup (Text.pack key)
+    parseK key = maybe (fail $ errMsg key) parseJSON . Aeson.lookup (Aeson.fromString key)
 
 
 -- | Generate & sign a certificate from a certificate description
