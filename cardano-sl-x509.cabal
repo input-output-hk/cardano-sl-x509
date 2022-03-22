@@ -24,7 +24,7 @@ library
   hs-source-dirs:     src
 
   build-depends: base >=4.7 && <5
-               , aeson
+               , aeson >= 2
                , asn1-encoding
                , asn1-types
                , base64-bytestring
@@ -36,7 +36,7 @@ library
                , exceptions
                , filepath
                , hourglass
-               , ip
+               , ip >= 1.7.4
                , text
                , unordered-containers
                , wide-word
