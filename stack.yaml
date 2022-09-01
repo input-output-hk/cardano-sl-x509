@@ -1,4 +1,4 @@
-resolver: https://raw.githubusercontent.com/input-output-hk/cardano-prelude/b83730dccab14111d62144b048084eec7900d091/snapshot.yaml
+resolver: lts-17.8
 
 
 packages:
@@ -6,7 +6,19 @@ packages:
 
 extra-deps:
   - git: https://github.com/input-output-hk/cardano-prelude
-    commit: b83730dccab14111d62144b048084eec7900d091
+    commit: e200e42182778e39c2d28bc377c25696896094b6
     subdirs:
-      - .
-      - test
+      - cardano-prelude
+      - cardano-prelude-test
+  - base16-bytestring-1.0.1.0
+  - canonical-json-0.6.0.0
+  - nothunks-0.1.2
+  - ip-1.7.3
+  - bytebuild-0.3.7.0
+  - byteslice-0.2.5.2
+  - bytesmith-0.3.7.0
+  - natural-arithmetic-0.1.2.0
+  - primitive-offset-0.2.0.0
+  - run-st-0.1.1.0
+  - tuples-0.1.0.0
+  - contiguous-0.5.1

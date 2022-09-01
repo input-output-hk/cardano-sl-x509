@@ -1,0 +1,75 @@
+name: "Haddock documentation"
+
+on:
+  push:
+
+jobs:
+  haddocks:
+    name: "Haddocks"
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc: ["8.10.4"]
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Configure to use libsodium
+      run: |
+        cat >> cabal.project <<EOF
+        package cardano-crypto-praos
+          flags: -external-libsodium-vrf
+        EOF
+
+    - name: Install Haskell
+      uses: haskell/actions/setup@v1
+      id: setup-haskell
+      with:
+        ghc-version: ${{ matrix.ghc }}
+        cabal-version: '3.4.0.0'
+
+    - name: Set up temp directory
+      run: |
+        echo 'TMPDIR=${{ runner.temp }}'  >> $GITHUB_ENV
+        echo 'TMP=${{ runner.temp }}'     >> $GITHUB_ENV
+
+    - uses: actions/cache@v2
+      name: Cache cabal store
+      with:
+        path: ${{ steps.setup-haskell.outputs.cabal-store }}
+        key: cache-haddock-${{ runner.os }}-${{ matrix.ghc }}-v1-${{ hashFiles('cabal-cache.cabal') }}-${{ github.sha }}
+        restore-keys: cache-haddock-${{ runner.os }}-${{ matrix.ghc }}-v1-${{ hashFiles('cabal-cache.cabal') }}-
+
+    - name: Update Hackage index
+      run: cabal v2-update
+
+    - name: Checkout ouroboros-network repository
+      uses: actions/checkout@v2
+
+    - name: Build dependencies
+      run: cabal configure --enable-tests
+
+    - name: build Haddock documentation 🔧
+      run: |
+        mkdir ./haddocks
+        ./scripts/haddocs.sh ./haddocks
+
+    - name: deploy to gh-pages 🚀
+      run: |
+        git config --local user.email "operations@iohk.io"
+        git config --local user.name ${{ github.actor }}
+        git fetch origin gh-pages:gh-pages
+        git checkout gh-pages
+        cp -r ./haddocks/* ./
+        rm -rf haddocks
+        git add -A
+        git commit -m "Deployed haddocks" || true
+        git push https://${{ github.actor }}:${{ github.token }}@github.com/${{ github.repository }}.git HEAD:gh-pages
